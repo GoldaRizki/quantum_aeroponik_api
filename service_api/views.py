@@ -9,7 +9,7 @@ from .textParser import PlainTextParser
 
 import json
 
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, result
 from qiskit.primitives import Sampler
 from qiskit_aer import Aer
 
@@ -34,9 +34,10 @@ def baca_sensor(request):
 
 
     # Dilakukan quantum encryption menggunakan protokol BB84
-    rangkaian = QuantumCircuit(1)
+    rangkaian = QuantumCircuit(1, 1)
     rangkaian.h(0)
     rangkaian.h(0)
+    rangkaian.measure(0,0)
 
     """ 
     simulator = Sampler()
@@ -46,7 +47,7 @@ def baca_sensor(request):
 
     simulator = Aer.get_backend('aer_simulator')
     hasil = simulator.run(rangkaian, shots=100).result()
-    print(hasil.sample_counts)
+    print(hasil.get_counts())
 
 
     # Convert kembali menjadi string
