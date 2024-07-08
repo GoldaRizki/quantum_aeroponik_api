@@ -47,21 +47,38 @@ def baca_sensor(request):
 
     simulator = Aer.get_backend('aer_simulator')
     hasil = simulator.run(rangkaian, shots=100).result()
-    print(hasil.get_counts())
+    #print(hasil.get_counts())
+
+    pengukuran = hasil.get_counts()
+
+    if(pengukuran['0'] == 100 or pengukuran['1'] == 100):
+        
+        # Convert kembali menjadi string
+        string_awal = ""
+        for i in range(0, len(cipher_text), 8):
+            angka = int(cipher_text[i:i+8], 2)
+            string_awal += chr(angka)
 
 
-    # Convert kembali menjadi string
-    string_awal = ""
-    for i in range(0, len(cipher_text), 8):
-        angka = int(cipher_text[i:i+8], 2)
-        string_awal += chr(angka)
-    #dictionary = json.loads(body_request)
+        # Dekripsi dari classical encryption method (Beaufort)
+        kunci = "wota"
+        kunci_index = 0
+        panjang_kunci = len(kunci)
+        plain_text = ""
+        for i in string_awal:
+            nilai_ascii = ord(i)
+            nilai_kunci = ord(kunci[kunci_index])
+            nilai_karakter = (nilai_ascii - nilai_kunci)%128
+            plain_text += chr(nilai_karakter)
+            kunci_index += 1
+            if(kunci_index == panjang_kunci):
+                kunci_index = 0
+        # Dimasukkan kedalam database lewat model dulu
 
-    # Dekripsi dari classical encryption method 
+        dictionary = json.loads(plain_text)
+        print(ascii(plain_text))
+        return Response(plain_text)
 
     
-    # Dimasukkan kedalam database lewat model dulu
-
-    
-
-    return Response(string_awal)
+    #return Response(body_request)
+    return Response({'error' : 'Data quantum tidak konsisten, kemungkinan disadap'})
