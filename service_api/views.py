@@ -68,14 +68,14 @@ def baca_sensor(request):
         for i in string_awal:
             nilai_ascii = ord(i)
             nilai_kunci = ord(kunci[kunci_index])
-            nilai_karakter = (nilai_ascii - nilai_kunci)%128
+            nilai_karakter = (nilai_ascii - nilai_kunci + 32)%127
             plain_text += chr(nilai_karakter)
             kunci_index += 1
             if(kunci_index == panjang_kunci):
                 kunci_index = 0
         # Dimasukkan kedalam database lewat model dulu
 
-        dictionary = json.loads(plain_text)
+        #xdictionary = json.loads(plain_text)
         print(ascii(plain_text))
         return Response(plain_text)
 
