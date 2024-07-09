@@ -61,22 +61,22 @@ def baca_sensor(request):
 
 
         # Dekripsi dari classical encryption method (Beaufort)
-        kunci = "wota"
+        kunci = "2"
         kunci_index = 0
         panjang_kunci = len(kunci)
         plain_text = ""
         for i in string_awal:
             nilai_ascii = ord(i)
             nilai_kunci = ord(kunci[kunci_index])
-            nilai_karakter = (nilai_ascii - nilai_kunci + 32)%127
+            nilai_karakter = (nilai_ascii - nilai_kunci)%128
             plain_text += chr(nilai_karakter)
             kunci_index += 1
             if(kunci_index == panjang_kunci):
                 kunci_index = 0
         # Dimasukkan kedalam database lewat model dulu
 
-        #xdictionary = json.loads(plain_text)
-        print(ascii(plain_text))
+        #ictionary = json.loads(plain_text)
+        print(plain_text)
         return Response(plain_text)
 
     
