@@ -26,6 +26,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
 
-    path('sensor/post', service_api_views.baca_sensor, name='baca_sensor')
+    path('sensor/get', service_api_views.data_terakhir, name='ambil_data'),
+    path('sensor/get/sehari', service_api_views.data_sehari, name='data_sehari'),
+    path('sensor/post', service_api_views.baca_sensor, name='upload_nilai_sensor'),
+
+
+    path('setting/get', service_api_views.baca_konfigurasi, name='baca_konfigurasi'),
+    path('setting/post', service_api_views.set_konfigurasi, name='upload_nilai_konfigurasi')
 
 ]

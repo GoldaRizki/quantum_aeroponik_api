@@ -13,4 +13,4 @@ class Pengukuran(models.Model):
 
 class Konfigurasi(models.Model):
     nama_konfigurasi = models.CharField(max_length=30)
-    nilai = models.IntegerField()
+    nilai = models.FloatField()
