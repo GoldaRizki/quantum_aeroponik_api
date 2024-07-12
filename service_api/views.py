@@ -91,6 +91,7 @@ def baca_sensor(request):
         nilai_ascii = ord(i)
         nilai_kunci = ord(kunci[kunci_index])
         nilai_karakter = (nilai_ascii - nilai_kunci)%128
+        if nilai_karakter < 0 : nilai_karakter += 128 
         plain_text += chr(nilai_karakter)
         kunci_index += 1
         if(kunci_index == panjang_kunci):
@@ -98,6 +99,7 @@ def baca_sensor(request):
 
     # Dimasukkan kedalam database lewat model dulu
     data = json.loads(plain_text)
+
 
     pengukuran = Pengukuran(
         suhu_dalam = data['suhu_dalam'],
@@ -119,7 +121,17 @@ def baca_konfigurasi(request):
     
     konfigurasi = Konfigurasi.objects.all().values()
 
-    return Response(konfigurasi)
+    
+    
+    data = {
+        "max_humidity" : konfigurasi[0]["nilai"],
+        "min_humidity" : konfigurasi[1]["nilai"],
+        "max_suhu" : konfigurasi[2]["nilai"],
+        "min_suhu" : konfigurasi[3]["nilai"]
+    }
+    
+
+    return Response(data)
 
 
 
