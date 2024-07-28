@@ -6,6 +6,8 @@ from rest_framework.response import Response
 
 from rest_framework.decorators import parser_classes
 from service_api.textParser import PlainTextParser
+from service_api.encryption import Vigenere
+from service_api.encryption import ProtokolBB84
 
 
 from service_api.models import Pengukuran
@@ -14,13 +16,11 @@ from service_api.models import Konfigurasi
 import json
 from datetime import datetime
 
-from qiskit import QuantumCircuit, result
-from qiskit.primitives import Sampler
-from qiskit_aer import Aer
-
 
 # Create your views here.
 
+vigenere = Vigenere()
+protokol_bb84 = ProtokolBB84()
 
 # Menyimpan data dari sensor ke dalam database 
 @api_view(['POST'])
@@ -30,72 +30,14 @@ def baca_sensor(request):
     # Data dari request masih berupa plain text
     body_request = request.data 
 
-    # Convert dulu menjadi binary
-    data_mentah = ""
-
-    for r in body_request:
-        data_mentah += format(ord(r), '08b')
-
-
-
     # Dilakukan quantum encryption menggunakan protokol BB84
-
-    simulator = Aer.get_backend('aer_simulator')
-
-    cipher_text = ""
-
-    for q in data_mentah:
-
-        rangkaian = QuantumCircuit(1, 1)
-
-        if q == '0':
-            rangkaian.h(0)
-            rangkaian.h(0)
-
-        else:
-            rangkaian.x(0)
-            rangkaian.h(0)
-            rangkaian.h(0)
-
-        rangkaian.measure(0,0)
-    
-
-        hasil = simulator.run(rangkaian, shots=100).result()
-        #print(hasil.get_counts())
-
-        pengukuran = hasil.get_counts()
-
-        if pengukuran.get('0') == 100:
-            cipher_text += "0"
-        elif pengukuran.get('1') == 100:
-            cipher_text += "1"
-        else:
-            return Response({'error' : 'Data quantum tidak konsisten, kemungkinan disadap'})
-
-
-
-    # Convert kembali menjadi string
-
-    string_awal = ""
-    for i in range(0, len(cipher_text), 8):
-        angka = int(cipher_text[i:i+8], 2)
-        string_awal += chr(angka)
+    classical_cipher = protokol_bb84.enkripsi(body_request)
 
 
     # Dekripsi dari classical encryption method (Vigenere)
     kunci = "wota konservatif"
-    kunci_index = 0
-    panjang_kunci = len(kunci)
-    plain_text = ""
-    for i in string_awal:
-        nilai_ascii = ord(i)
-        nilai_kunci = ord(kunci[kunci_index])
-        nilai_karakter = (nilai_ascii - nilai_kunci)%128
-        if nilai_karakter < 0 : nilai_karakter += 128 
-        plain_text += chr(nilai_karakter)
-        kunci_index += 1
-        if(kunci_index == panjang_kunci):
-            kunci_index = 0
+
+    plain_text = vigenere.dekripsi(kunci, classical_cipher)
 
     # Dimasukkan kedalam database lewat model dulu
     data = json.loads(plain_text)
@@ -121,8 +63,6 @@ def baca_konfigurasi(request):
     
     konfigurasi = Konfigurasi.objects.all().values()
 
-    
-    
     data = {
         "max_humidity" : konfigurasi[0]["nilai"],
         "min_humidity" : konfigurasi[1]["nilai"],
