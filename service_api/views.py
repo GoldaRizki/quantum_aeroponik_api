@@ -46,8 +46,6 @@ def baca_sensor(request):
     pengukuran = Pengukuran(
         suhu_dalam = data['suhu_dalam'],
         kelembapan_dalam = data['humidity_dalam'],
-        suhu_luar = data['suhu_luar'],
-        kelembapan_luar = data['humidity_luar'],
         tangki_air = data['tangki_air']
     )
 
@@ -112,9 +110,7 @@ def data_terakhir(request):
 
     data = {
         "suhu_dalam": pengukuran.suhu_dalam,
-        "suhu_luar": pengukuran.suhu_luar,
         "kelembapan_dalam": pengukuran.kelembapan_dalam,
-        "kelembapan_luar": pengukuran.kelembapan_luar,
         "tangki_air": pengukuran.tangki_air,
         "waktu_pengukuran": pengukuran.waktu_pengukuran
     }
@@ -129,4 +125,4 @@ def data_sehari(request):
     pengukuran = Pengukuran.objects.filter(waktu_pengukuran__day = hari_ini.day, waktu_pengukuran__month = hari_ini.month, waktu_pengukuran__year = hari_ini.year)
 
     
-    return Response(pengukuran.values("suhu_dalam", "suhu_luar", "kelembapan_luar", "kelembapan_dalam", "tangki_air", "waktu_pengukuran"))
+    return Response(pengukuran.values("suhu_dalam", "kelembapan_dalam", "tangki_air", "waktu_pengukuran"))

@@ -4,8 +4,6 @@ from django.db import models
 class Pengukuran(models.Model):
     suhu_dalam = models.FloatField()
     kelembapan_dalam = models.FloatField()
-    suhu_luar = models.FloatField()
-    kelembapan_luar = models.FloatField()
     tangki_air = models.BooleanField()
     waktu_pengukuran = models.DateTimeField(auto_now_add=True)
 
